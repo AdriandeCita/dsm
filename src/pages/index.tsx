@@ -46,12 +46,12 @@ export default function Home() {
         </main>
         <footer className={styles.footer}>
           <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+            href="https://en.wikipedia.org/wiki/Design_structure_matrix"
             target="_blank"
             rel="noopener noreferrer"
           >
             <Image aria-hidden src="/file.svg" alt="File icon" width={16} height={16} />
-            Learn
+            What it design structure matrix?
           </a>
         </footer>
       </div>

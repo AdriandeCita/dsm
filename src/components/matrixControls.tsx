@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { useDSM } from "../context/dsmEditor";
 
 export default function MatrixControls() {
@@ -11,6 +12,7 @@ export default function MatrixControls() {
       )
     ) {
       wipeMatrix();
+      toast.success("The matrix has been cleared!");
     }
   };
 

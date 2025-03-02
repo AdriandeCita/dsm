@@ -1,12 +1,13 @@
 import { useDSM } from "@/context/dsmEditor";
+import toast from "react-hot-toast";
 
 export default function Matrix() {
   const { components, links, setLinks, isBidirectionalLink } = useDSM();
 
   // Function to copy matrix to clipboard
-  const copyMatrixToClipboard = () => {
+  const copyMatrixToClipboard = async () => {
     if (components.length === 0) {
-      alert("No components to copy!");
+      toast.error("No components to copy!");
       return;
     }
 
@@ -27,8 +28,8 @@ export default function Matrix() {
     });
 
     const matrixText = [headers, ...rows].join("\n");
-    navigator.clipboard.writeText(matrixText);
-    alert("Matrix copied to clipboard!");
+    await navigator.clipboard.writeText(matrixText);
+    toast.success("Copied to clipboard!");
   };
 
   // Determines if a cell should be marked

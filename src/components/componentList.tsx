@@ -3,6 +3,7 @@ import { useDSM } from "../context/dsmEditor";
 import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import toast from "react-hot-toast";
 
 export default function ComponentsList() {
   const { components, addComponent, setState, removeComponent, reorderComponents } = useDSM();
@@ -10,10 +11,10 @@ export default function ComponentsList() {
   const [tempName, setTempName] = useState("");
 
   // Function to copy components to clipboard
-  const copyComponentsToClipboard = () => {
+  const copyComponentsToClipboard = async () => {
     const text = components.map((entry) => entry.name).join("\n"); // Tab-separated for spreadsheet pasting
-    navigator.clipboard.writeText(text);
-    alert("Components copied to clipboard!");
+    await navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard!");
   };
 
   // Handle edit mode activation
