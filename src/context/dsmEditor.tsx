@@ -21,18 +21,15 @@ export interface SortingKey {
 export type SystemComponentLinks = Record<string, string[]>;
 interface Data {
   components: SystemComponent[];
-  sortingKeys: SortingKey[];
   links: SystemComponentLinks;
   isBidirectionalLink: boolean;
 }
 
 interface DsmContext extends Data {
   setState: Dispatch<SetStateAction<Data>>;
-  setSortingKeys: (_: SortingKey[]) => void;
   setLinks: (_: SystemComponentLinks) => void;
   addComponent: (_: string) => void;
   removeComponent: (_: string) => void;
-  sortComponentsByKeys: () => void;
   setIsBidirectionalLink: (_: boolean) => void;
   wipeMatrix: () => void;
   reorderComponents: (_: number, __: number) => void;
@@ -43,14 +40,11 @@ const STORAGE_KEY = "dsm-editor-data"; // LocalStorage key
 // Create the context
 const DSMContext = createContext<DsmContext>({
   components: [],
-  sortingKeys: [],
   links: {},
   isBidirectionalLink: false,
-  setSortingKeys: () => {},
   setLinks: () => {},
   addComponent: () => {},
   removeComponent: () => {},
-  sortComponentsByKeys: () => {},
   setState: () => {},
   setIsBidirectionalLink: () => {},
   wipeMatrix: () => {},
@@ -83,6 +77,17 @@ export const DSMProvider = ({ children }: { children: ReactNode }) => {
 
   const [state, setState] = useState<Data>(loadState);
 
+  useEffect(() => {
+    const hasUserBeenTherePreviously = localStorage.getItem(STORAGE_KEY) !== null;
+
+    if (!hasUserBeenTherePreviously) {
+      addComponent("Tail");
+      addComponent("Wings");
+      addComponent("Fuselage");
+      addComponent("Canopy");
+    }
+  }, []);
+
   // Auto-save to localStorage on any state change
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -94,7 +99,6 @@ export const DSMProvider = ({ children }: { children: ReactNode }) => {
     setState((prev) => ({
       ...prev,
       components: [...prev.components, { id, name }],
-      sortingKeys: [...prev.sortingKeys, { id, key: "" }],
       links: { ...prev.links, [id]: [] }, // Initialize empty links
     }));
   };
@@ -111,37 +115,15 @@ export const DSMProvider = ({ children }: { children: ReactNode }) => {
       return {
         ...prev,
         components: prev.components.filter((comp) => comp.id !== id),
-        sortingKeys: prev.sortingKeys.filter((key) => key.id !== id),
         links: newLinks,
       };
     });
-  };
-
-  // Update sorting keys
-  const setSortingKeys = (newKeys: SortingKey[]) => {
-    setState((prev) => ({ ...prev, sortingKeys: newKeys }));
   };
 
   // Update links
   const setLinks = (newLinks: SystemComponentLinks) => {
     setState((prev) => ({ ...prev, links: newLinks }));
   };
-
-  const sortComponentsByKeys = useCallback(() => {
-    const { sortingKeys, components } = state;
-    const keyItems = sortingKeys
-      .slice()
-      .map((entry) => ({ ...entry, key: entry.key.toLocaleUpperCase() }));
-    keyItems.sort((a, b) => a.key.localeCompare(b.key));
-    const componentsMap = Object.fromEntries(
-      components.map((component) => [component.id, component])
-    );
-    setState({
-      ...state,
-      sortingKeys: keyItems,
-      components: keyItems.map((entry) => componentsMap[entry.id]),
-    });
-  }, [state]);
 
   const setIsBidirectionalLink = useCallback(
     (flag: boolean) => {
@@ -178,9 +160,7 @@ export const DSMProvider = ({ children }: { children: ReactNode }) => {
         ...state,
         addComponent,
         removeComponent,
-        setSortingKeys,
         setLinks,
-        sortComponentsByKeys,
         setState,
         setIsBidirectionalLink,
         wipeMatrix,

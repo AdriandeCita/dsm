@@ -4,7 +4,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { DSMProvider } from "../context/dsmEditor";
 import ComponentsList from "../components/componentList";
-import SortingKeysList from "../components/sortingKeysList";
 import Matrix from "../components/matrix";
 import MatrixControls from "../components/matrixControls";
 
@@ -38,7 +37,6 @@ export default function Home() {
                 display: "flex",
               }}
             >
-              {/* <SortingKeysList /> */}
               <ComponentsList />
               <Matrix />
             </div>
